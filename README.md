@@ -140,7 +140,7 @@ POST /api/chat
 ```json
 POST /api/correct
 {
-  "slug":   "ashwath-rajan",
+  "slug":   "ash-rajan",
   "scene":  "When reviewing a SIM for auth failures",
   "wrong":  "Escalates immediately to L6 without checking CloudWatch",
   "correct": "Checks CloudWatch logs first, rules out infra, then escalates with a full RCA summary"
@@ -213,7 +213,7 @@ Edit `.env`:
 ```ini
 AWS_ACCESS_KEY_ID=your_access_key_here
 AWS_SECRET_ACCESS_KEY=your_secret_key_here
-AWS_REGION=us-east-1
+AWS_REGION=us-west-2
 BEDROCK_MODEL_ID=anthropic.claude-3-sonnet-20240229-v1:0
 IMPRINT_DATA_DIR=./imprint_data
 ```
