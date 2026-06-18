@@ -129,7 +129,7 @@ The Flask server runs on `http://localhost:5000`.
 ```json
 POST /api/chat
 {
-  "slug":    "ashwath-rajan",
+  "slug":    "ash-rajan",
   "message": "How would they handle a P1 auth outage SIM?",
   "mode":    "full"
 }
