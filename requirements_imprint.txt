@@ -1,0 +1,12 @@
+# Project IMPRINT — requirements
+# Install with: pip install -r requirements_imprint.txt
+
+boto3>=1.34.0          # AWS Bedrock client (same as vizSquad)
+botocore>=1.34.0       # Throttle handling
+faiss-cpu>=1.7.4       # Vector index for RAG pass
+numpy>=1.24.0          # Embedding arrays
+python-dotenv>=1.0.0   # .env loader (same pattern as vizSquad)
+
+# Optional — uncomment if you want LangGraph orchestration
+# (the stub in imprint.py runs without it)
+# langgraph>=0.1.0

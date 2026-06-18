@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project IMPRINT</title>
+<style>
+  /* ── Tokens ────────────────────────────────────────────────────────────── */
+  :root {
+    --bg:          #0B1120;
+    --surface:     #111827;
+    --surface2:    #1a2336;
+    --surface3:    #1f2d45;
+    --border:      #243351;
+    --border2:     #2d4166;
+    --accent:      #3B82F6;
+    --accent-dim:  #1d4ed8;
+    --accent-glow: rgba(59,130,246,0.18);
+    --green:       #10B981;
+    --green-dim:   rgba(16,185,129,0.12);
+    --amber:       #F59E0B;
+    --red:         #EF4444;
+    --text:        #E2E8F0;
+    --text2:       #94A3B8;
+    --text3:       #64748B;
+    --mono:        'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+    --sans:        'Inter', system-ui, sans-serif;
+    --radius:      8px;
+    --radius-lg:   14px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 13px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* ── Top bar ────────────────────────────────────────────────────────────── */
+  .topbar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 0 20px;
+    height: 52px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    z-index: 10;
+  }
+
+  .topbar-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo-mark {
+    width: 28px; height: 28px;
+    background: linear-gradient(135deg, var(--accent) 0%, #8B5CF6 100%);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 800; color: white;
+    letter-spacing: -0.5px;
+  }
+
+  .logo-text {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--text);
+  }
+
+  .logo-sub {
+    font-size: 10px;
+    color: var(--text3);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-family: var(--mono);
+  }
+
+  .topbar-nav {
+    display: flex;
+    gap: 2px;
+    margin-left: 24px;
+  }
+
+  .nav-btn {
+    padding: 5px 14px;
+    border: none;
+    background: transparent;
+    color: var(--text3);
+    font-size: 12px;
+    font-family: var(--sans);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.15s;
+    font-weight: 500;
+  }
+  .nav-btn:hover { background: var(--surface2); color: var(--text); }
+  .nav-btn.active {
+    background: var(--accent-glow);
+    color: var(--accent);
+    border: 1px solid rgba(59,130,246,0.3);
+  }
+
+  .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+
+  .status-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 6px var(--green);
+    animation: pulse-green 2s infinite;
+  }
+  @keyframes pulse-green {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.5; }
+  }
+
+  .status-label { font-size: 11px; color: var(--text3); font-family: var(--mono); }
+
+  /* ── Main layout ────────────────────────────────────────────────────────── */
+  .main {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* ── Left sidebar ───────────────────────────────────────────────────────── */
+  .sidebar {
+    width: 240px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  .sidebar-section {
+    padding: 12px 14px 6px;
+    font-size: 10px;
+    font-family: var(--mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text3);
+    font-weight: 600;
+  }
+
+  .skill-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 4px 8px;
+  }
+
+  .skill-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 10px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-bottom: 2px;
+    border: 1px solid transparent;
+  }
+  .skill-item:hover { background: var(--surface2); }
+  .skill-item.active {
+    background: var(--accent-glow);
+    border-color: rgba(59,130,246,0.25);
+  }
+
+  .skill-avatar {
+    width: 30px; height: 30px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; color: white;
+    flex-shrink: 0;
+  }
+
+  .skill-info { flex: 1; min-width: 0; }
+  .skill-name { font-weight: 600; font-size: 12px; color: var(--text); truncate; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .skill-meta { font-size: 10px; color: var(--text3); font-family: var(--mono); }
+
+  .skill-status-badge {
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: var(--mono);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+  .badge-active  { background: var(--green-dim); color: var(--green); }
+  .badge-draft   { background: rgba(245,158,11,0.1); color: var(--amber); }
+
+  .sidebar-empty {
+    padding: 20px 14px;
+    color: var(--text3);
+    font-size: 11px;
+    line-height: 1.6;
+    text-align: center;
+  }
+
+  /* ── Content panels ─────────────────────────────────────────────────────── */
+  .content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .panel { display: none; flex: 1; flex-direction: column; overflow: hidden; }
+  .panel.active { display: flex; }
+
+  /* ── Panel header ───────────────────────────────────────────────────────── */
+  .panel-header {
+    padding: 16px 24px 14px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .panel-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .icon-blue   { background: rgba(59,130,246,0.15); }
+  .icon-green  { background: rgba(16,185,129,0.12); }
+  .icon-amber  { background: rgba(245,158,11,0.12); }
+  .icon-red    { background: rgba(239,68,68,0.12);  }
+
+  .panel-title { font-size: 15px; font-weight: 700; color: var(--text); }
+  .panel-sub   { font-size: 11px; color: var(--text3); margin-top: 1px; }
+
+  /* ── Scrollable panel body ──────────────────────────────────────────────── */
+  .panel-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 24px;
+  }
+
+  /* ── Form elements ──────────────────────────────────────────────────────── */
+  .form-group { margin-bottom: 16px; }
+  .form-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text2);
+    margin-bottom: 6px;
+    letter-spacing: 0.05em;
+    font-family: var(--mono);
+  }
+
+  .form-input, .form-select, .form-textarea {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-size: 13px;
+    font-family: var(--sans);
+    padding: 9px 12px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-glow);
+  }
+  .form-textarea { resize: vertical; min-height: 80px; }
+  .form-select option { background: var(--surface2); }
+
+  /* ── Buttons ────────────────────────────────────────────────────────────── */
+  .btn {
+    padding: 9px 18px;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+  }
+  .btn-primary:hover { background: #2563EB; }
+  .btn-primary:disabled { background: var(--border2); color: var(--text3); cursor: not-allowed; }
+
+  .btn-danger { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
+  .btn-danger:hover { background: rgba(239,68,68,0.25); }
+
+  .btn-ghost { background: var(--surface3); color: var(--text2); }
+  .btn-ghost:hover { background: var(--border2); color: var(--text); }
+
+  /* ── Log terminal ───────────────────────────────────────────────────────── */
+  .log-terminal {
+    background: #060d1a;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 14px 16px;
+    font-family: var(--mono);
+    font-size: 11px;
+    line-height: 1.7;
+    color: #64B5F6;
+    max-height: 260px;
+    overflow-y: auto;
+    margin-top: 16px;
+  }
+  .log-terminal .log-ok  { color: var(--green); }
+  .log-terminal .log-err { color: var(--red); }
+  .log-terminal .log-warn { color: var(--amber); }
+  .log-terminal .log-info { color: #64B5F6; }
+
+  .log-spinner {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border: 1.5px solid var(--accent);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Progress bar ───────────────────────────────────────────────────────── */
+  .progress-wrap {
+    background: var(--surface3);
+    border-radius: 99px;
+    height: 4px;
+    margin-top: 12px;
+    overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), #8B5CF6);
+    border-radius: 99px;
+    transition: width 0.4s ease;
+    box-shadow: 0 0 10px var(--accent-glow);
+  }
+
+  /* ── Skill card ─────────────────────────────────────────────────────────── */
+  .skill-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px 18px;
+    margin-bottom: 12px;
+  }
+  .skill-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .skill-card-avatar {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; font-weight: 800; color: white;
+  }
+  .skill-card-name { font-weight: 700; font-size: 14px; }
+  .skill-card-slug { font-family: var(--mono); font-size: 10px; color: var(--text3); }
+  .skill-card-badges { display: flex; gap: 6px; margin-top: 4px; }
+
+  .badge {
+    font-size: 10px; padding: 2px 8px;
+    border-radius: 4px; font-family: var(--mono); font-weight: 600;
+  }
+  .badge-blue { background: rgba(59,130,246,0.12); color: var(--accent); }
+
+  .skill-card-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 8px 10px;
+    text-align: center;
+  }
+  .stat-val { font-family: var(--mono); font-size: 15px; font-weight: 700; color: var(--accent); }
+  .stat-key { font-size: 10px; color: var(--text3); margin-top: 1px; }
+
+  /* ── Chat panel ─────────────────────────────────────────────────────────── */
+  .chat-layout {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    gap: 0;
+  }
+
+  .chat-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-right: 1px solid var(--border);
+  }
+
+  .chat-skill-bar {
+    padding: 10px 16px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  .chat-skill-avatar {
+    width: 28px; height: 28px;
+    border-radius: 7px;
+    background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 800; color: white;
+  }
+
+  .chat-skill-name { font-weight: 600; font-size: 12px; }
+  .chat-skill-slug { font-family: var(--mono); font-size: 10px; color: var(--text3); }
+
+  .chat-skill-thinking {
+    margin-left: auto;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text3);
+    display: none;
+    align-items: center;
+    gap: 5px;
+  }
+  .chat-skill-thinking.active {
+    display: flex;
+    color: var(--accent);
+  }
+
+  .chat-mode-select {
+    margin-left: auto;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text2);
+    font-size: 11px;
+    padding: 4px 8px;
+    font-family: var(--mono);
+    cursor: pointer;
+  }
+
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .chat-empty {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--text3);
+    text-align: center;
+    gap: 8px;
+  }
+  .chat-empty-icon { font-size: 32px; }
+  .chat-empty-text { font-size: 13px; line-height: 1.6; max-width: 280px; }
+
+  .msg {
+    display: flex;
+    flex-direction: column;
+    max-width: 78%;
+  }
+  .msg-user { align-self: flex-end; align-items: flex-end; }
+  .msg-skill { align-self: flex-start; align-items: flex-start; }
+
+  .msg-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+    font-size: 10px;
+    color: var(--text3);
+    font-family: var(--mono);
+  }
+
+  .msg-bubble {
+    padding: 10px 14px;
+    border-radius: var(--radius-lg);
+    font-size: 12.5px;
+    line-height: 1.65;
+  }
+
+  .msg-user .msg-bubble {
+    background: var(--accent);
+    color: white;
+    border-bottom-right-radius: 4px;
+  }
+
+  .msg-skill .msg-bubble {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-bottom-left-radius: 4px;
+  }
+
+  .msg-sources {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    margin-top: 6px;
+  }
+  .source-tag {
+    font-size: 9px;
+    padding: 2px 6px;
+    background: var(--surface3);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text3);
+    font-family: var(--mono);
+  }
+
+  .msg-typing .msg-bubble { padding: 12px 14px; }
+  .typing-dots span {
+    display: inline-block;
+    width: 5px; height: 5px;
+    background: var(--text3);
+    border-radius: 50%;
+    margin: 0 1px;
+    animation: typing 1.2s infinite;
+  }
+  .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes typing {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+    30%            { transform: translateY(-4px); opacity: 1; }
+  }
+
+  .chat-input-area {
+    padding: 12px 16px;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+    flex-shrink: 0;
+  }
+
+  .chat-input {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-size: 13px;
+    font-family: var(--sans);
+    padding: 9px 12px;
+    outline: none;
+    resize: none;
+    max-height: 120px;
+    transition: border-color 0.15s;
+  }
+  .chat-input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-glow); }
+
+  .chat-send-btn {
+    width: 36px; height: 36px;
+    background: var(--accent);
+    border: none;
+    border-radius: var(--radius);
+    color: white;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    transition: background 0.15s;
+    flex-shrink: 0;
+  }
+  .chat-send-btn:hover { background: #2563EB; }
+  .chat-send-btn:disabled { background: var(--border2); cursor: not-allowed; }
+
+  /* ── Chat sidebar ───────────────────────────────────────────────────────── */
+  .chat-sidebar {
+    width: 220px;
+    background: var(--surface);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    flex-shrink: 0;
+    padding: 14px;
+    gap: 12px;
+  }
+
+  .chat-sidebar h4 {
+    font-size: 10px;
+    font-family: var(--mono);
+    letter-spacing: 0.1em;
+    color: var(--text3);
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  .prompt-pills { display: flex; flex-direction: column; gap: 5px; }
+  .prompt-pill {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 7px 10px;
+    font-size: 11px;
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.15s;
+    line-height: 1.4;
+  }
+  .prompt-pill:hover { background: var(--surface3); border-color: var(--accent); color: var(--text); }
+
+  /* ── Alert ──────────────────────────────────────────────────────────────── */
+  .alert {
+    padding: 10px 14px;
+    border-radius: var(--radius);
+    font-size: 12px;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    margin-top: 12px;
+  }
+  .alert-success { background: var(--green-dim); border: 1px solid rgba(16,185,129,0.2); color: var(--green); }
+  .alert-error   { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); color: var(--red); }
+
+  /* ── Scrollbar ──────────────────────────────────────────────────────────── */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- ── Top bar ──────────────────────────────────────────────────────────────── -->
+<div class="topbar">
+  <div class="topbar-logo">
+    <div class="logo-mark">IP</div>
+    <div>
+      <div class="logo-text">IMPRINT</div>
+      <div class="logo-sub">Knowledge Distillation</div>
+    </div>
+  </div>
+
+  <div class="topbar-nav">
+    <button class="nav-btn active" onclick="showPanel('create')">① Create Skill</button>
+    <button class="nav-btn" onclick="showPanel('correct')">② Correct</button>
+    <button class="nav-btn" onclick="showPanel('delete')">③ Delete</button>
+    <button class="nav-btn" onclick="showPanel('chat')">④ Chat with Skill</button>
+  </div>
+
+  <div class="topbar-right">
+    <div class="status-dot"></div>
+    <span class="status-label">API: localhost:5000</span>
+  </div>
+</div>
+
+<!-- ── Main ─────────────────────────────────────────────────────────────────── -->
+<div class="main">
+
+  <!-- ── Sidebar: skill list ──────────────────────────────────────────────── -->
+  <div class="sidebar">
+    <div class="sidebar-section">Skills</div>
+    <div class="skill-list" id="skillList">
+      <div class="sidebar-empty">No skills yet.<br>Create one to get started.</div>
+    </div>
+  </div>
+
+  <!-- ── Content area ─────────────────────────────────────────────────────── -->
+  <div class="content">
+
+    <!-- ① CREATE ──────────────────────────────────────────────────────────── -->
+    <div class="panel active" id="panel-create">
+      <div class="panel-header">
+        <div class="panel-icon icon-blue">🧠</div>
+        <div>
+          <div class="panel-title">Create Skill — Full Pipeline</div>
+          <div class="panel-sub">Ingest traces → FAISS embed → dual-track distillation → SKILL.md</div>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div style="max-width:560px">
+
+          <div class="form-group">
+            <label class="form-label">Colleague Name</label>
+            <input class="form-input" id="createName" placeholder="e.g. Ashwath Rajan" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Trace Folder Path</label>
+            <input class="form-input" id="createFolder" placeholder="e.g. traces/  or  /home/user/traces/" />
+            <div style="font-size:10px;color:var(--text3);margin-top:5px;">
+              Accepts .txt .md .json .csv — task logs, COE traces, workstyle surveys
+            </div>
+          </div>
+
+          <button class="btn btn-primary" id="createBtn" onclick="startCreate()">
+            <span>▶</span> Run Pipeline
+          </button>
+
+          <div id="createProgress" style="display:none">
+            <div class="progress-wrap" style="margin-top:18px">
+              <div class="progress-bar" id="progressBar" style="width:0%"></div>
+            </div>
+            <div class="log-terminal" id="createLog">
+              <span class="log-spinner"></span> Initialising pipeline...
+            </div>
+          </div>
+
+          <div id="createResult"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ② CORRECT ─────────────────────────────────────────────────────────── -->
+    <div class="panel" id="panel-correct">
+      <div class="panel-header">
+        <div class="panel-icon icon-amber">✏️</div>
+        <div>
+          <div class="panel-title">Apply Correction</div>
+          <div class="panel-sub">Patch the persona/behavior track with a feedback record</div>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div style="max-width:560px">
+          <div class="form-group">
+            <label class="form-label">Skill Slug</label>
+            <input class="form-input" id="correctSlug" placeholder="e.g. ashwath-rajan" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Scene — context where the wrong behavior occurs</label>
+            <input class="form-input" id="correctScene" placeholder="e.g. When reviewing a SIM related to auth failures" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Wrong — what the artifact currently does</label>
+            <textarea class="form-textarea" id="correctWrong" placeholder="e.g. Escalates immediately to L6 without first checking CloudWatch"></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Correct — what it should do instead</label>
+            <textarea class="form-textarea" id="correctRight" placeholder="e.g. Checks CloudWatch logs first, rules out infra issues, then escalates with a full RCA summary"></textarea>
+          </div>
+          <button class="btn btn-primary" onclick="applyCorrection()">Apply Correction</button>
+          <div id="correctResult"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ③ DELETE ──────────────────────────────────────────────────────────── -->
+    <div class="panel" id="panel-delete">
+      <div class="panel-header">
+        <div class="panel-icon icon-red">🗑️</div>
+        <div>
+          <div class="panel-title">Delete Skill</div>
+          <div class="panel-sub">Associate-owned: full artifact removal with no career consequence</div>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div style="max-width:480px">
+          <div style="background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.2);border-radius:var(--radius-lg);padding:14px 16px;margin-bottom:20px;">
+            <div style="font-weight:600;color:var(--red);margin-bottom:4px;">⚠ Permanent Deletion</div>
+            <div style="color:var(--text2);font-size:12px;line-height:1.6;">
+              Deletes the SKILL.md, vector index, work.md, persona.md and all metadata.
+              This action cannot be undone. Any corrections or versioning history will also be removed.
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Skill Slug</label>
+            <input class="form-input" id="deleteSlug" placeholder="e.g. ashwath-rajan" />
+          </div>
+          <button class="btn btn-danger" onclick="deleteSkill()">🗑 Delete Artifact</button>
+          <div id="deleteResult"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ④ CHAT ────────────────────────────────────────────────────────────── -->
+    <div class="panel" id="panel-chat">
+      <div class="chat-layout">
+
+        <!-- Chat main -->
+        <div class="chat-main">
+          <div class="chat-skill-bar">
+            <div class="chat-skill-avatar" id="chatAvatar">?</div>
+            <div>
+              <div class="chat-skill-name" id="chatSkillName">Select a skill</div>
+              <div class="chat-skill-slug" id="chatSkillSlug">—</div>
+            </div>
+            <div class="chat-skill-thinking" id="chatThinking">
+              <span class="log-spinner" style="border-color:var(--accent);border-top-color:transparent"></span>
+              thinking...
+            </div>
+            <select class="chat-mode-select" id="chatMode" title="Response mode">
+              <option value="full">Full skill</option>
+              <option value="capability">Capability only</option>
+              <option value="persona">Style only</option>
+            </select>
+          </div>
+
+          <div class="chat-messages" id="chatMessages">
+            <div class="chat-empty" id="chatEmpty">
+              <div class="chat-empty-icon">💬</div>
+              <div class="chat-empty-text">
+                Select a skill from the sidebar, then ask how they'd handle an email, SIM, incident, or decision.
+              </div>
+            </div>
+          </div>
+
+          <div class="chat-input-area">
+            <textarea
+              class="chat-input"
+              id="chatInput"
+              placeholder="Ask how this colleague would respond to a SIM, email, or decision…"
+              rows="1"
+              onkeydown="handleChatKey(event)"
+            ></textarea>
+            <button class="chat-send-btn" id="chatSendBtn" onclick="sendChat()" disabled>➤</button>
+          </div>
+        </div>
+
+        <!-- Chat sidebar: context prompts -->
+        <div class="chat-sidebar">
+          <h4>Starter Prompts</h4>
+          <div class="prompt-pills" id="promptPills">
+            <div class="prompt-pill" onclick="injectPrompt(this)">How would they respond to a P1 auth outage SIM?</div>
+            <div class="prompt-pill" onclick="injectPrompt(this)">Draft an escalation email for a data inconsistency issue.</div>
+            <div class="prompt-pill" onclick="injectPrompt(this)">How would they prioritise these 3 incidents?</div>
+            <div class="prompt-pill" onclick="injectPrompt(this)">What would they check first in a latency spike?</div>
+            <div class="prompt-pill" onclick="injectPrompt(this)">How would they do a code review on this PR?</div>
+            <div class="prompt-pill" onclick="injectPrompt(this)">When would they escalate vs handle solo?</div>
+          </div>
+
+          <h4 style="margin-top:8px">Active Skill</h4>
+          <div id="chatSidebarCard" style="color:var(--text3);font-size:11px">
+            None selected
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const API = 'http://localhost:5000/api';
+  let activeSlug = null;
+  let pollTimer  = null;
+
+  // ── Panel switching ─────────────────────────────────────────────────────────
+  function showPanel(name) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('panel-' + name).classList.add('active');
+    event.target.classList.add('active');
+    if (name === 'chat' && activeSlug) loadChatSkill(activeSlug);
+  }
+
+  // ── Skill sidebar ───────────────────────────────────────────────────────────
+  async function loadSkillList() {
+    try {
+      const r = await fetch(`${API}/skills`);
+      const d = await r.json();
+      renderSkillList(d.skills || []);
+    } catch(e) {
+      document.getElementById('skillList').innerHTML =
+        '<div class="sidebar-empty" style="color:var(--red)">Cannot reach API.<br>Start imprint_api.py first.</div>';
+    }
+  }
+
+  function renderSkillList(skills) {
+    const el = document.getElementById('skillList');
+    if (!skills.length) {
+      el.innerHTML = '<div class="sidebar-empty">No skills yet.<br>Create one to get started.</div>';
+      return;
+    }
+    el.innerHTML = skills.map(s => `
+      <div class="skill-item ${s.slug === activeSlug ? 'active' : ''}"
+           onclick="selectSkill('${s.slug}', '${s.name}')">
+        <div class="skill-avatar">${s.name.charAt(0).toUpperCase()}</div>
+        <div class="skill-info">
+          <div class="skill-name">${s.name}</div>
+          <div class="skill-meta">v${s.version} · ${s.source_count} files</div>
+        </div>
+        <span class="skill-status-badge ${s.status === 'active' ? 'badge-active' : 'badge-draft'}">
+          ${s.status}
+        </span>
+      </div>
+    `).join('');
+  }
+
+  function selectSkill(slug, name) {
+    activeSlug = slug;
+    // Pre-fill slugs in other panels
+    ['correctSlug','deleteSlug'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = slug;
+    });
+    loadSkillList();
+    loadChatSkill(slug, name);
+  }
+
+  // ── Create pipeline ─────────────────────────────────────────────────────────
+  async function startCreate() {
+    const name   = document.getElementById('createName').value.trim();
+    const folder = document.getElementById('createFolder').value.trim() || 'traces';
+    if (!name) { alert('Enter a colleague name.'); return; }
+
+    document.getElementById('createBtn').disabled = true;
+    document.getElementById('createProgress').style.display = 'block';
+    document.getElementById('createResult').innerHTML = '';
+    document.getElementById('createLog').innerHTML =
+      '<span class="log-spinner"></span> Starting pipeline for ' + name + '...';
+    setProgress(5);
+
+    try {
+      const r = await fetch(`${API}/create`, {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({colleague_name: name, trace_folder: folder}),
+      });
+      const d = await r.json();
+      if (d.error) throw new Error(d.error);
+      pollJob(d.slug);
+    } catch(e) {
+      logLine('error', 'ERROR: ' + e.message);
+      document.getElementById('createBtn').disabled = false;
+    }
+  }
+
+  function pollJob(slug) {
+    const STAGES = ['intake','rag','capability','persona','artifact'];
+    let lastLogCount = 0;
+    let stageIndex = 0;
+
+    clearInterval(pollTimer);
+    pollTimer = setInterval(async () => {
+      try {
+        const r = await fetch(`${API}/job/${slug}`);
+        const d = await r.json();
+        const logs = d.logs || [];
+
+        // Render new log lines
+        const logEl = document.getElementById('createLog');
+        if (logs.length > lastLogCount) {
+          logEl.innerHTML = '';
+          logs.forEach(line => {
+            const cls = line.includes('ERROR') ? 'log-err'
+                      : line.includes('WARN')  ? 'log-warn'
+                      : line.includes('complete') || line.includes('✓') ? 'log-ok'
+                      : 'log-info';
+            logEl.innerHTML += `<div class="${cls}">${line}</div>`;
+          });
+          logEl.scrollTop = logEl.scrollHeight;
+          lastLogCount = logs.length;
+
+          // Update progress based on stage keywords
+          const lastLog = logs[logs.length - 1] || '';
+          if (lastLog.includes('Stage 1')) setProgress(10);
+          else if (lastLog.includes('Stage 2')) setProgress(30);
+          else if (lastLog.includes('Stage 3')) setProgress(50);
+          else if (lastLog.includes('Stage 4')) setProgress(70);
+          else if (lastLog.includes('Stage 5')) setProgress(90);
+        }
+
+        if (d.status === 'complete') {
+          clearInterval(pollTimer);
+          setProgress(100);
+          logEl.innerHTML += '<div class="log-ok">✓ Pipeline complete!</div>';
+          document.getElementById('createBtn').disabled = false;
+          document.getElementById('createResult').innerHTML = `
+            <div class="alert alert-success">
+              ✓ Skill created for <strong>${slug}</strong>.
+              Switch to "Chat with Skill" to test it.
+            </div>`;
+          loadSkillList();
+        } else if (d.status === 'error') {
+          clearInterval(pollTimer);
+          document.getElementById('createBtn').disabled = false;
+          document.getElementById('createResult').innerHTML =
+            '<div class="alert alert-error">Pipeline failed — check logs above.</div>';
+        }
+      } catch(e) { /* transient network error, keep polling */ }
+    }, 1500);
+  }
+
+  function setProgress(pct) {
+    document.getElementById('progressBar').style.width = pct + '%';
+  }
+
+  function logLine(type, msg) {
+    const el = document.getElementById('createLog');
+    el.innerHTML += `<div class="log-${type}">${msg}</div>`;
+    el.scrollTop = el.scrollHeight;
+  }
+
+  // ── Correction ──────────────────────────────────────────────────────────────
+  async function applyCorrection() {
+    const slug  = document.getElementById('correctSlug').value.trim();
+    const scene = document.getElementById('correctScene').value.trim();
+    const wrong = document.getElementById('correctWrong').value.trim();
+    const right = document.getElementById('correctRight').value.trim();
+    if (!slug || !scene || !wrong || !right) { alert('All fields are required.'); return; }
+
+    try {
+      const r = await fetch(`${API}/correct`, {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({slug, scene, wrong, correct: right}),
+      });
+      const d = await r.json();
+      if (d.error) throw new Error(d.error);
+      document.getElementById('correctResult').innerHTML = `
+        <div class="alert alert-success">
+          ✓ Correction applied — now at v${d.new_version}
+          (${d.correction_count} total correction${d.correction_count !== 1 ? 's' : ''})
+        </div>`;
+      loadSkillList();
+    } catch(e) {
+      document.getElementById('correctResult').innerHTML =
+        `<div class="alert alert-error">Error: ${e.message}</div>`;
+    }
+  }
+
+  // ── Delete ──────────────────────────────────────────────────────────────────
+  async function deleteSkill() {
+    const slug = document.getElementById('deleteSlug').value.trim();
+    if (!slug) { alert('Enter a slug.'); return; }
+    if (!confirm(`Permanently delete skill '${slug}'? This cannot be undone.`)) return;
+
+    try {
+      const r = await fetch(`${API}/delete`, {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({slug}),
+      });
+      const d = await r.json();
+      if (d.error) throw new Error(d.error);
+      document.getElementById('deleteResult').innerHTML =
+        `<div class="alert alert-success">✓ ${d.message}</div>`;
+      if (activeSlug === slug) { activeSlug = null; resetChatUI(); }
+      loadSkillList();
+    } catch(e) {
+      document.getElementById('deleteResult').innerHTML =
+        `<div class="alert alert-error">Error: ${e.message}</div>`;
+    }
+  }
+
+  // ── Chat ────────────────────────────────────────────────────────────────────
+  let chatHistory = [];
+
+  async function loadChatSkill(slug, name) {
+    try {
+      const r = await fetch(`${API}/skill/${slug}`);
+      const d = await r.json();
+      if (d.error) return;
+      const meta = d.meta;
+      activeSlug = slug;
+      const cname = meta['colleague-name'] || slug;
+      const initial = cname.charAt(0).toUpperCase();
+
+      document.getElementById('chatAvatar').textContent = initial;
+      document.getElementById('chatSkillName').textContent = cname;
+      document.getElementById('chatSkillSlug').textContent = `/${slug}-skill · v${meta.version}`;
+      document.getElementById('chatSendBtn').disabled = false;
+      document.getElementById('chatEmpty').style.display = 'flex';
+
+      document.getElementById('chatSidebarCard').innerHTML = `
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px">
+          <div style="font-weight:700;color:var(--text);font-size:12px;margin-bottom:6px">${cname}</div>
+          <div style="color:var(--text3);font-size:10px;font-family:var(--mono);line-height:1.8">
+            v${meta.version}<br>
+            ${meta['source-scope']?.length || 0} source files<br>
+            ${meta['correction-count'] || 0} corrections<br>
+            <span style="color:${meta['lifecycle-status']==='active'?'var(--green)':'var(--amber)'}">${meta['lifecycle-status']}</span>
+          </div>
+        </div>`;
+
+      // Highlight in sidebar
+      document.querySelectorAll('.skill-item').forEach(el => el.classList.remove('active'));
+      loadSkillList();
+    } catch(e) { console.error(e); }
+  }
+
+  function resetChatUI() {
+    document.getElementById('chatAvatar').textContent = '?';
+    document.getElementById('chatSkillName').textContent = 'Select a skill';
+    document.getElementById('chatSkillSlug').textContent = '—';
+    document.getElementById('chatSendBtn').disabled = true;
+    document.getElementById('chatSidebarCard').innerHTML = 'None selected';
+    document.getElementById('chatMessages').innerHTML =
+      `<div class="chat-empty" id="chatEmpty">
+        <div class="chat-empty-icon">💬</div>
+        <div class="chat-empty-text">Select a skill from the sidebar to begin chatting.</div>
+      </div>`;
+    chatHistory = [];
+  }
+
+  async function sendChat() {
+    if (!activeSlug) { alert('Select a skill first.'); return; }
+    const input = document.getElementById('chatInput');
+    const msg = input.value.trim();
+    if (!msg) return;
+    const mode = document.getElementById('chatMode').value;
+
+    input.value = '';
+    input.style.height = 'auto';
+    document.getElementById('chatSendBtn').disabled = true;
+    document.getElementById('chatEmpty') && (document.getElementById('chatEmpty').style.display = 'none');
+
+    // User bubble
+    appendMsg('user', msg, null);
+    chatHistory.push({role: 'user', content: msg});
+
+    // Typing indicator
+    const typingId = 'typing-' + Date.now();
+    const messagesEl = document.getElementById('chatMessages');
+    messagesEl.innerHTML += `
+      <div class="msg msg-skill msg-typing" id="${typingId}">
+        <div class="msg-header">🧠 ${document.getElementById('chatSkillName').textContent}</div>
+        <div class="msg-bubble">
+          <div class="typing-dots"><span></span><span></span><span></span></div>
+        </div>
+      </div>`;
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+    document.getElementById('chatThinking').classList.add('active');
+
+    try {
+      const r = await fetch(`${API}/chat`, {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({slug: activeSlug, message: msg, mode}),
+      });
+      const d = await r.json();
+      document.getElementById(typingId)?.remove();
+
+      if (d.error) {
+        appendMsg('skill', '⚠ ' + d.error, null);
+      } else {
+        chatHistory.push({role: 'assistant', content: d.response});
+        appendMsg('skill', d.response, d.sources);
+      }
+    } catch(e) {
+      document.getElementById(typingId)?.remove();
+      appendMsg('skill', '⚠ API error: ' + e.message, null);
+    }
+
+    document.getElementById('chatThinking').classList.remove('active');
+    document.getElementById('chatSendBtn').disabled = false;
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+
+  function appendMsg(role, text, sources) {
+    const el = document.getElementById('chatMessages');
+    const isUser = role === 'user';
+    const name = isUser ? 'You' : document.getElementById('chatSkillName').textContent;
+    const srcHtml = sources && sources.length
+      ? `<div class="msg-sources">${sources.map(s => `<span class="source-tag">📄 ${s}</span>`).join('')}</div>`
+      : '';
+    el.innerHTML += `
+      <div class="msg msg-${role}">
+        <div class="msg-header">${name}</div>
+        <div class="msg-bubble">${formatResponse(text)}</div>
+        ${srcHtml}
+      </div>`;
+    el.scrollTop = el.scrollHeight;
+  }
+
+  function formatResponse(text) {
+    // Basic markdown-lite formatting
+    return text
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+      .replace(/`([^`]+)`/g,'<code style="font-family:var(--mono);background:var(--surface);padding:1px 4px;border-radius:3px;font-size:11px">$1</code>')
+      .replace(/\n/g,'<br>');
+  }
+
+  function handleChatKey(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendChat();
+    }
+    // Auto-resize textarea
+    e.target.style.height = 'auto';
+    e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
+  }
+
+  function injectPrompt(el) {
+    document.getElementById('chatInput').value = el.textContent.trim();
+    document.getElementById('chatInput').focus();
+  }
+
+  // ── Boot ─────────────────────────────────────────────────────────────────────
+  loadSkillList();
+  setInterval(loadSkillList, 15000);  // refresh sidebar every 15s
+</script>
+</body>
+</html>
