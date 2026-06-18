@@ -2,7 +2,7 @@
 
 <img src="img/project%20IMPRINT%20SD.png" alt="Project IMPRINT System Design" width="860"/>
 
-# Project IMPRINT — M II
+# Project IMPRINT
 
 **Capturing Operational Expertise as Invokable AI Skills**
 
